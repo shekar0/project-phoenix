@@ -14,7 +14,7 @@ export class AuthService {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey, {
       auth: {
         storageKey: 'sb-auth-token',
-        flowType: 'pkce',
+        flowType: 'implicit',
         autoRefreshToken: true,
         persistSession: true,
         detectSessionInUrl: true,
@@ -58,6 +58,10 @@ export class AuthService {
   async signIn(email: string, password: string) {
     const { data, error } = await this.supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
+    // Immediately update user subject so isLoggedIn is true for the auth guard
+    if (data.user) {
+      this.userSubject.next(data.user);
+    }
     return data;
   }
 
