@@ -11,7 +11,19 @@ export class AuthService {
   user$: Observable<User | null> = this.userSubject.asObservable();
 
   constructor() {
-    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
+    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey, {
+      auth: {
+        storageKey: 'sb-auth-token',
+        flowType: 'pkce',
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true,
+        // Suppress NavigatorLockAcquireTimeoutError by using a no-op lock
+        lock: async (_name: string, _acquireTimeout: number, fn: () => Promise<any>) => {
+          return await fn();
+        },
+      },
+    });
 
     // Restore session on load
     this.supabase.auth.getSession().then(({ data }) => {

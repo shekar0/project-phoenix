@@ -86,21 +86,37 @@ class GeminiService:
 
     async def generate_video(self, prompt: str) -> dict:
         """Start an async Veo video generation job."""
-        operation = await asyncio.to_thread(
-            self.client.models.generate_videos,
-            model=self.VIDEO_MODEL,
-            prompt=prompt,
-            config=types.GenerateVideosConfig(
-                aspect_ratio="16:9",
-                number_of_videos=1,
-            ),
-        )
-        op_name = getattr(operation, "name", str(uuid.uuid4()))
-        return {
-            "job_id": str(uuid.uuid4()),
-            "operation_name": op_name,
-            "status": "processing",
-        }
+        try:
+            operation = await asyncio.to_thread(
+                self.client.models.generate_videos,
+                model=self.VIDEO_MODEL,
+                prompt=prompt,
+                config=types.GenerateVideosConfig(
+                    aspect_ratio="16:9",
+                    number_of_videos=1,
+                ),
+            )
+            op_name = getattr(operation, "name", str(uuid.uuid4()))
+            return {
+                "job_id": str(uuid.uuid4()),
+                "operation_name": op_name,
+                "status": "processing",
+            }
+        except Exception as exc:
+            error_msg = str(exc)
+            # Provide clear error messages for common failures
+            if "not found" in error_msg.lower() or "404" in error_msg:
+                raise RuntimeError(
+                    f"Video model '{self.VIDEO_MODEL}' is not available. "
+                    "Veo video generation may not be enabled for your API key. "
+                    "Please check your Google AI Studio dashboard."
+                )
+            if "permission" in error_msg.lower() or "403" in error_msg:
+                raise RuntimeError(
+                    "Your API key does not have permission to use video generation. "
+                    "Veo requires specific API access — check Google AI Studio."
+                )
+            raise RuntimeError(f"Video generation failed: {error_msg}")
 
     async def check_video_status(self, operation_name: str) -> dict:
         """Poll the status of a video generation operation."""

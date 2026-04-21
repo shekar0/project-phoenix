@@ -23,6 +23,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:4200",
         "http://localhost:5173",
+        "https://project-phoenix-fo1o.onrender.com",
     ],
     allow_credentials=True,
     allow_methods=["*"],
