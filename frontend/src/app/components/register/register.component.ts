@@ -30,7 +30,7 @@ import { AuthService } from '../../services/auth.service';
           <div *ngIf="success"
                class="mb-6 px-5 py-4 rounded-xl bg-green-500/10 border-2 border-green-500/40 text-green-400">
             <p class="font-bold text-lg mb-1">🎉 Account almost ready!</p>
-            <p class="text-sm">We've sent a confirmation link to your email. You <strong>must</strong> click that link before you can sign in.</p>
+            <p class="text-sm">Account is created successfully. Click on sign in.</p>
           </div>
 
           <!-- Error message -->
