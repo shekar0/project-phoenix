@@ -24,6 +24,7 @@ app.add_middleware(
         "http://localhost:4200",
         "http://localhost:5173",
         "https://project-phoenix-fo1o.onrender.com",
+        "https://project-phoenix-vcs.vercel.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],
